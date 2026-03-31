@@ -1,0 +1,344 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --bg: #f6f1e7;
+    --paper: #fffaf0;
+    --card: #fdf8ee;
+    --brown-dark: #2f241d;
+    --brown: #5b4332;
+    --brown-light: #8a6a52;
+    --gold: #c8a96b;
+    --gold-soft: #e1c78d;
+    --border: #d8c3a5;
+    --shadow: rgba(47, 36, 29, 0.12);
+    --danger: #8b3a2e;
+    --danger-hover: #6f2d23;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 40px 20px;
+    font-family: "Inter", sans-serif;
+    background:
+        linear-gradient(rgba(246, 241, 231, 0.92), rgba(246, 241, 231, 0.92)),
+        url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+    color: var(--brown-dark);
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+    font-family: "Cormorant Garamond", serif;
+    margin-top: 0;
+    color: var(--brown-dark);
+    letter-spacing: 0.4px;
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+
+p {
+    color: var(--brown);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--brown-dark);
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+a:hover {
+    color: var(--gold);
+}
+
+.container,
+.auth-box,
+.editor-box,
+.dashboard-box {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.auth-box,
+.editor-box,
+.dashboard-box {
+    background: rgba(255, 250, 240, 0.92);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px var(--shadow);
+    backdrop-filter: blur(2px);
+}
+
+.auth-box {
+    max-width: 460px;
+    padding: 36px 32px;
+    margin-top: 60px;
+}
+
+.dashboard-box {
+    padding: 32px;
+}
+
+.editor-box {
+    max-width: 900px;
+    padding: 32px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.topbar-left h2 {
+    margin-bottom: 6px;
+}
+
+.topbar-left p {
+    margin: 0;
+    font-size: 0.98rem;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fffdf8;
+    color: var(--brown-dark);
+    font-size: 15px;
+    font-family: "Inter", sans-serif;
+    outline: none;
+    transition: 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(47, 36, 29, 0.05);
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200, 169, 107, 0.18);
+}
+
+textarea {
+    min-height: 420px;
+    resize: vertical;
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+.search-wrap {
+    margin: 18px 0 28px;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--brown-dark);
+    color: #fffaf0;
+    box-shadow: 0 6px 14px rgba(47, 36, 29, 0.14);
+}
+
+button:hover {
+    transform: translateY(-1px);
+    background: #221914;
+}
+
+button.secondary {
+    background: var(--gold);
+    color: #2f241d;
+}
+
+button.secondary:hover {
+    background: var(--gold-soft);
+}
+
+button.danger {
+    background: var(--danger);
+    color: #fff8f3;
+}
+
+button.danger:hover {
+    background: var(--danger-hover);
+}
+
+button.ghost {
+    background: transparent;
+    color: var(--brown-dark);
+    border: 1px solid var(--border);
+    box-shadow: none;
+}
+
+button.ghost:hover {
+    background: #f5ebd8;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    text-align: center;
+    color: var(--brown);
+    font-size: 0.95rem;
+}
+
+#documentsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.doc-item {
+    background: linear-gradient(180deg, #fffaf1 0%, #f8eedf 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 20px rgba(91, 67, 50, 0.08);
+    transition: 0.2s ease;
+}
+
+.doc-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(91, 67, 50, 0.12);
+}
+
+.doc-item h4 {
+    margin-bottom: 14px;
+    font-size: 1.5rem;
+    line-height: 1.1;
+}
+
+.doc-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.status-text {
+    margin-top: 14px;
+    color: var(--brown);
+    font-style: italic;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 24px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--brown);
+}
+
+.small-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.2rem;
+    color: var(--brown);
+}
+
+.brand {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    color: var(--brown-light);
+    margin-bottom: 24px;
+    font-size: 0.98rem;
+}
+
+.empty-state {
+    padding: 30px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    background: rgba(255, 248, 235, 0.8);
+    color: var(--brown);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #efe4d2;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #b08a5a;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8e6c46;
+}
+
+@media (max-width: 700px) {
+    body {
+        padding: 20px 14px;
+    }
+
+    .dashboard-box,
+    .editor-box,
+    .auth-box {
+        padding: 22px;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    textarea {
+        min-height: 300px;
+    }
+}

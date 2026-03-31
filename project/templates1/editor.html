@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Editor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Urejanje dokumenta</h2>
+
+    <input type="text" id="title" value="{{ doc.title }}" placeholder="Naslov dokumenta">
+    <br><br>
+    <textarea id="content" rows="15" cols="80" placeholder="Piši tukaj...">{{ doc.content }}</textarea>
+    <br><br>
+
+    <button onclick="saveDoc()">Shrani</button>
+    <a href="/dashboard"><button>Nazaj</button></a>
+
+    <p id="status"></p>
+
+<script>
+function saveDoc() {
+    let title = document.getElementById("title").value;
+    let content = document.getElementById("content").value;
+
+    fetch("/save_document/{{ doc.id }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "title=" + encodeURIComponent(title) + "&content=" + encodeURIComponent(content)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("status").innerText = "Shranjeno!";
+        } else {
+            document.getElementById("status").innerText = "Napaka pri shranjevanju.";
+        }
+    });
+}
+</script>
+</body>
+</html>

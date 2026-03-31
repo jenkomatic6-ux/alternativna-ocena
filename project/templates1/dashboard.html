@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Zapiski</h2>
+    <h3>Pozdravljen {{ user }}!</h3>
+
+    <button onclick="newDocument()">Nov dokument</button>
+    <a href="/logout"><button>Logout</button></a>
+    <input type="text" id="searchInput" onkeyup="searchDocs()" placeholder="Išči dokument...">
+
+    <div id="documentsList">
+        {% for doc in documents %}
+            <div class="doc-item" data-id="{{ doc.id }}">
+                <h4>{{ doc.title }}</h4>
+                <button onclick="openDoc({{ doc.id }})">Odpri</button>
+                <button onclick="deleteDoc({{ doc.id }})">Izbriši</button>
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+
+<script>
+function newDocument() {
+    fetch("/new_document", {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "/editor/" + data.doc_id;
+        }
+    });
+}
+
+function openDoc(id) {
+    window.location.href = "/editor/" + id;
+}
+
+function deleteDoc(id) {
+    fetch("/delete_document/" + id, {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.querySelector('[data-id="' + id + '"]').remove();
+        }
+    });
+}
+
+function searchDocs() {
+    let q = document.getElementById("searchInput").value;
+
+    fetch("/search_documents?q=" + encodeURIComponent(q))
+    .then(response => response.json())
+    .then(data => {
+        let list = document.getElementById("documentsList");
+        list.innerHTML = "";
+
+        data.forEach(doc => {
+            list.innerHTML += `
+                <div class="doc-item" data-id="${doc.id}">
+                    <h4>${doc.title}</h4>
+                    <button onclick="openDoc(${doc.id})">Odpri</button>
+                    <button onclick="deleteDoc(${doc.id})">Izbriši</button>
+                </div>
+            `;
+        });
+    });
+}
+</script>
+</html>
