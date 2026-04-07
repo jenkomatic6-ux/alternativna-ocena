@@ -1,11 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
-    <h3>Pozdravljen {{ user }}!</h3>
-    
-   
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Pozdravljen {{ user }}!</h2>
+
+<h3>Nova objava</h3>
+<form id="postForm">
+    <textarea name="content" id="content" rows="4" cols="50" placeholder="Napiši objavo..." required></textarea>
+    <br><br>
+    <button type="submit">Objavi</button>
+</form>
+
+<p id="message"></p>
+
+<hr>
+
+<h3>Vse objave</h3>
+<div id="posts">
+    {% for post in posts %}
+        <div id="post-{{ post.id }}">
+            <p>
+                <b><a href="/profile/{{ post.username }}">{{ post.username }}</a></b>
+                | {{ post.created_at }}
+            </p>
+            <p>{{ post.content }}</p>
+
+            {% if post.username == session["username"] %}
+                <button onclick="deletePost({{ post.id }})">Izbriši</button>
+            {% endif %}
+            <a href="/create_post">+ Nova objava</a>
+            <hr>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+document.getElementById("postForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    const response = await fetch("/create_post", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    const message = document.getElementById("message");
+
+    if (data.success) {
+        message.innerText = "Objava uspešno dodana.";
+
+        const postsDiv = document.getElementById("posts");
+        const newPost = document.createElement("div");
+        newPost.id = "post-" + data.post.id;
+
+        newPost.innerHTML = `
+            <p>
+                <b><a href="/profile/${data.post.username}">${data.post.username}</a></b>
+                | ${data.post.created_at}
+            </p>
+            <p>${data.post.content}</p>
+            <button onclick="deletePost(${data.post.id})">Izbriši</button>
+            <hr>
+        `;
+
+        postsDiv.prepend(newPost);
+        document.getElementById("postForm").reset();
+    } else {
+        message.innerText = data.message;
+    }
+});
+
+async function deletePost(postId) {
+    const response = await fetch(`/delete_post/${postId}`, {
+        method: "POST"
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        const postElement = document.getElementById("post-" + postId);
+        if (postElement) {
+            postElement.remove();
+        }
+    } else {
+        alert(data.message);
+    }
+}
+</script>
+{% endblock %}

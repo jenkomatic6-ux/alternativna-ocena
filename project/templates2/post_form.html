@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Objava{% endblock %}
+
+{% block content %}
+<h2>Nova objava</h2>
+
+<form method="POST" action="/create_post">
+    <textarea name="content" rows="5" cols="50" placeholder="Napiši objavo..." required></textarea>
+    <br><br>
+    <button type="submit">Objavi</button>
+</form>
+
+{% endblock %}

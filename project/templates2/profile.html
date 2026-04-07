@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<h2>Profil uporabnika: {{ profile_user.username }}</h2>
+
+<p><b>Bio:</b> {{ profile_user.bio if profile_user.bio else "Ni opisa." }}</p>
+
+{% if is_own_profile %}
+    <h3>Uredi profil</h3>
+    <form method="POST" action="/edit_profile">
+        <textarea name="bio" rows="4" cols="50" placeholder="Tvoj bio...">{{ profile_user.bio }}</textarea>
+        <br><br>
+        <button type="submit">Shrani bio</button>
+    </form>
+    <hr>
+{% endif %}
+
+<h3>Objave uporabnika</h3>
+
+{% for post in posts %}
+    <div>
+        <p><b>{{ post.created_at }}</b></p>
+        <p>{{ post.content }}</p>
+        <hr>
+    </div>
+{% else %}
+    <p>Ta uporabnik še nima objav.</p>
+{% endfor %}
+{% endblock %}
