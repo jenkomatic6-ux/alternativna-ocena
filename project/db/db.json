@@ -1,1 +1,1 @@
-{"users": {"1": {"username": "wann", "password": "wann", "note": ""}}, "documents": {"3": {"id": 1, "owner": "wann", "title": "Dokument 1", "content": "test"}}}
+{"users": {"1": {"username": "admin", "password": "admin", "note": ""}}, "documents": {"1": {"id": 1, "owner": "admin", "title": "Alternativna ocena", "content": "5dddd"}, "2": {"id": 2, "owner": "admin", "title": "test", "content": "dasdasad\nda\nsd\nas\ndas\nd\nas"}, "3": {"id": 3, "owner": "admin", "title": "alterbla", "content": "adasda"}}}
