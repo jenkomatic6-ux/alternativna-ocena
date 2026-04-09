@@ -1,31 +1,56 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard">Dashboard</a> |
+        <a href="/profile/{{ session['username'] }}">Moj profil</a> |
+        <a href="/logout">Logout</a>
+    </nav>
 
-{% block title %}Profil{% endblock %}
-
-{% block content %}
-<h2>Profil uporabnika: {{ profile_user.username }}</h2>
-
-<p><b>Bio:</b> {{ profile_user.bio if profile_user.bio else "Ni opisa." }}</p>
-
-{% if is_own_profile %}
-    <h3>Uredi profil</h3>
-    <form method="POST" action="/edit_profile">
-        <textarea name="bio" rows="4" cols="50" placeholder="Tvoj bio...">{{ profile_user.bio }}</textarea>
-        <br><br>
-        <button type="submit">Shrani bio</button>
-    </form>
     <hr>
-{% endif %}
 
-<h3>Objave uporabnika</h3>
+    <h2>Profil uporabnika: {{ profile_user.username }}</h2>
 
-{% for post in posts %}
-    <div>
-        <p><b>{{ post.created_at }}</b></p>
-        <p>{{ post.content }}</p>
+    {% if profile_user.profile_image %}
+        <img src="{{ url_for('static', filename=profile_user.profile_image) }}" alt="profilna slika" width="120">
+    {% endif %}
+
+    <p><b>Bio:</b> {{ profile_user.bio if profile_user.bio else "Ni opisa." }}</p>
+
+    {% if is_own_profile %}
+        <h3>Uredi profil</h3>
+        <form method="POST" action="/edit_profile" enctype="multipart/form-data">
+            <textarea name="bio" rows="4" cols="50" placeholder="Tvoj bio...">{{ profile_user.bio }}</textarea>
+            <br><br>
+            <input type="file" name="profile_image" accept="image/*">
+            <br><br>
+            <button type="submit">Shrani profil</button>
+        </form>
         <hr>
-    </div>
-{% else %}
-    <p>Ta uporabnik še nima objav.</p>
-{% endfor %}
-{% endblock %}
+    {% endif %}
+
+    <h3>Objave uporabnika</h3>
+
+    {% for post in posts %}
+        <div>
+            <p><b>{{ post.created_at }}</b></p>
+
+            {% if post.content %}
+                <p>{{ post.content }}</p>
+            {% endif %}
+
+            {% if post.image_path %}
+                <img src="{{ url_for('static', filename=post.image_path) }}" alt="slika objave" width="250">
+            {% endif %}
+            <hr>
+        </div>
+    {% else %}
+        <p>Ta uporabnik še nima objav.</p>
+    {% endfor %}
+</body>
+</html>

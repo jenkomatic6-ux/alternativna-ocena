@@ -1,94 +1,106 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard">Dashboard</a> |
+        <a href="/profile/{{ session['username'] }}">Moj profil</a> |
+        <a href="/logout">Logout</a>
+    </nav>
 
-{% block title %}Dashboard{% endblock %}
+    <hr>
 
-{% block content %}
-<h2>Pozdravljen {{ user }}!</h2>
+    <h2>Pozdravljen {{ user }}!</h2>
 
-<h3>Nova objava</h3>
-<form id="postForm">
-    <textarea name="content" id="content" rows="4" cols="50" placeholder="Napiši objavo..." required></textarea>
-    <br><br>
-    <button type="submit">Objavi</button>
-</form>
+    <h3>Nova objava</h3>
+    <form id="postForm" enctype="multipart/form-data">
+        <textarea name="content" id="content" rows="4" cols="50" placeholder="Napiši objavo..."></textarea>
+        <br><br>
+        <input type="file" name="image" accept="image/*">
+        <br><br>
+        <button type="submit">Objavi</button>
+    </form>
 
-<p id="message"></p>
+    <p id="message"></p>
 
-<hr>
+    <hr>
 
-<h3>Vse objave</h3>
-<div id="posts">
-    {% for post in posts %}
-        <div id="post-{{ post.id }}">
-            <p>
+    <h3>Vse objave</h3>
+    <div id="posts">
+        {% for post in posts %}
+            <div id="post-{{ post.id }}">
+                {% if post.profile_image %}
+                    <img src="{{ url_for('static', filename=post.profile_image) }}" alt="profilna" width="70">
+                    <br>
+                {% endif %}
+
                 <b><a href="/profile/{{ post.username }}">{{ post.username }}</a></b>
-                | {{ post.created_at }}
-            </p>
-            <p>{{ post.content }}</p>
+                <p>{{ post.created_at }}</p>
 
-            {% if post.username == session["username"] %}
-                <button onclick="deletePost({{ post.id }})">Izbriši</button>
-            {% endif %}
-            <a href="/create_post">+ Nova objava</a>
-            <hr>
-        </div>
-    {% endfor %}
-</div>
+                {% if post.content %}
+                    <p>{{ post.content }}</p>
+                {% endif %}
 
-<script>
-document.getElementById("postForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+                {% if post.image_path %}
+                    <img src="{{ url_for('static', filename=post.image_path) }}" alt="slika objave" width="250">
+                {% endif %}
 
-    const formData = new FormData(this);
+                {% if post.username == session['username'] %}
+                    <br><br>
+                    {% if post.can_manage %}
+                        <a href="/edit_post/{{ post.id }}">Uredi objavo</a>
+                        <button onclick="deletePost({{ post.id }})">Izbriši objavo</button>
+                    {% else %}
+                        <p>Objavo lahko urejaš ali brišeš samo 24 ur po objavi.</p>
+                    {% endif %}
+                {% endif %}
+                <hr>
+            </div>
+        {% endfor %}
+    </div>
 
-    const response = await fetch("/create_post", {
-        method: "POST",
-        body: formData
-    });
+    <script>
+    document.getElementById("postForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
 
-    const data = await response.json();
+        const formData = new FormData(this);
 
-    const message = document.getElementById("message");
+        const response = await fetch("/create_post", {
+            method: "POST",
+            body: formData
+        });
 
-    if (data.success) {
-        message.innerText = "Objava uspešno dodana.";
+        const data = await response.json();
+        const message = document.getElementById("message");
 
-        const postsDiv = document.getElementById("posts");
-        const newPost = document.createElement("div");
-        newPost.id = "post-" + data.post.id;
-
-        newPost.innerHTML = `
-            <p>
-                <b><a href="/profile/${data.post.username}">${data.post.username}</a></b>
-                | ${data.post.created_at}
-            </p>
-            <p>${data.post.content}</p>
-            <button onclick="deletePost(${data.post.id})">Izbriši</button>
-            <hr>
-        `;
-
-        postsDiv.prepend(newPost);
-        document.getElementById("postForm").reset();
-    } else {
-        message.innerText = data.message;
-    }
-});
-
-async function deletePost(postId) {
-    const response = await fetch(`/delete_post/${postId}`, {
-        method: "POST"
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-        const postElement = document.getElementById("post-" + postId);
-        if (postElement) {
-            postElement.remove();
+        if (data.success) {
+            message.innerText = "Objava uspešno dodana.";
+            location.reload();
+        } else {
+            message.innerText = data.message;
         }
-    } else {
-        alert(data.message);
+    });
+
+    async function deletePost(postId) {
+        const response = await fetch(`/delete_post/${postId}`, {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const postElement = document.getElementById("post-" + postId);
+            if (postElement) {
+                postElement.remove();
+            }
+        } else {
+            alert(data.message);
+        }
     }
-}
-</script>
-{% endblock %}
+    </script>
+</body>
+</html>

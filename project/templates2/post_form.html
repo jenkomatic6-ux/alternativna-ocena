@@ -1,14 +1,37 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Objava</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="/dashboard">Dashboard</a> |
+        <a href="/profile/{{ session['username'] }}">Moj profil</a> |
+        <a href="/logout">Logout</a>
+    </nav>
 
-{% block title %}Objava{% endblock %}
+    <hr>
 
-{% block content %}
-<h2>Nova objava</h2>
+    <h2>{% if edit_mode %}Uredi objavo{% else %}Nova objava{% endif %}</h2>
 
-<form method="POST" action="/create_post">
-    <textarea name="content" rows="5" cols="50" placeholder="Napiši objavo..." required></textarea>
-    <br><br>
-    <button type="submit">Objavi</button>
-</form>
+    <form method="POST" enctype="multipart/form-data">
+        <textarea name="content" rows="5" cols="50" placeholder="Napiši objavo...">{% if post %}{{ post.content }}{% endif %}</textarea>
+        <br><br>
+        <input type="file" name="image" accept="image/*">
+        <br><br>
 
-{% endblock %}
+        {% if post and post.image_path %}
+            <p>Trenutna slika:</p>
+            <img src="{{ url_for('static', filename=post.image_path) }}" alt="slika objave" width="250">
+            <br><br>
+        {% endif %}
+
+        <button type="submit">Shrani</button>
+    </form>
+
+    <br>
+    <a href="/dashboard">Nazaj na dashboard</a>
+</body>
+</html>
