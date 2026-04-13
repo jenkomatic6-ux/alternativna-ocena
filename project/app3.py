@@ -7,7 +7,7 @@ import time
 app = Flask(__name__, template_folder="templates3", static_folder="static3")
 app.secret_key = "skrivnost123"
 
-db = TinyDB("db3.json")
+db = TinyDB("db3/db3.json")
 users = db.table("users")
 products = db.table("products")
 
