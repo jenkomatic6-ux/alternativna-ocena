@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj izdelek</title>
+</head>
+<body>
+    <h2>Dodaj motorno žago</h2>
+
+    <form action="/add_product" method="post" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Naslov" required>
+        <br><br>
+
+        <textarea name="description" placeholder="Opis" rows="5" cols="40" required></textarea>
+        <br><br>
+
+        <input type="text" name="brand" placeholder="Znamka" required>
+        <br><br>
+
+        <select name="power_type" required>
+            <option value="">Izberi pogon</option>
+            <option value="Bencin">Bencin</option>
+            <option value="Elektrika">Elektrika</option>
+            <option value="Elektrika">Baterija</option>
+        </select>
+        <br><br>
+
+        <input type="text" name="chain_length" placeholder="Dolžina ketne (cm)" required>
+        <br><br>
+
+        <input type="number" step="0.01" name="price" placeholder="Cena" required>
+        <br><br>
+
+        <input type="file" name="image">
+        <br><br>
+
+        <button type="submit">Objavi</button>
+    </form>
+
+    <br>
+    <a href="/dashboard">Nazaj na dashboard</a>
+</body>
+</html> 

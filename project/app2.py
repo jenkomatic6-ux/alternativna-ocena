@@ -11,7 +11,7 @@ app = Flask(__name__, template_folder="templates2", static_folder="static2")
 app.secret_key = "skrivnost123"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "app2.db")
+DATABASE = os.path.join(BASE_DIR, "db2/app2.db")
 PROFILE_UPLOAD_FOLDER = os.path.join(BASE_DIR, "static2", "uploads", "profile_pics")
 POST_UPLOAD_FOLDER = os.path.join(BASE_DIR, "static2", "uploads", "post_images")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}

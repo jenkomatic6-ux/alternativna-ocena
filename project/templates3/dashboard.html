@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Trgovina z motorkami</h2>
+
+    {% if session.get("user") %}
+        <p>Pozdravljen {{ session["user"] }}!</p>
+        <a href="/add_product">Dodaj izdelek</a> |
+        <a href="/logout">Logout</a>
+    {% else %}
+        <a href="/login">Login</a> |
+        <a href="/register">Register</a>
+    {% endif %}
+
+    <hr>
+
+    <h3>Search</h3>
+    <input type="text" id="searchInput" placeholder="Išči po naslovu...">
+
+    <hr>
+
+    <div id="products">
+        {% for product in products %}
+            <div style="border:1px solid black; padding:15px; margin-bottom:15px; width:300px;">
+                <h3>{{ product.title }}</h3>
+                <p><b>Objavil:</b> {{ product.username }}</p>
+                <p><b>Opis:</b> {{ product.description }}</p>
+                <p><b>Znamka:</b> {{ product.brand }}</p>
+                <p><b>Pogon:</b> {{ product.power_type }}</p>
+                <p><b>Dolžina ketne:</b> {{ product.chain_length }} cm</p>
+                <p><b>Cena:</b> {{ product.price }} €</p>
+
+                {% if product.image %}
+                    <img src="/static3/uploads/{{ product.image }}" width="200">
+                {% endif %}
+
+                {% if session.get("user") == product.username %}
+                    <form action="/delete_product/{{ product.doc_id }}" method="post">
+                        <br>
+                        <button type="submit">Izbriši</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+    const searchInput = document.getElementById("searchInput");
+    const productsDiv = document.getElementById("products");
+
+    searchInput.addEventListener("input", async function() {
+        const q = searchInput.value;
+
+        const response = await fetch(`/search?q=${encodeURIComponent(q)}`);
+        const data = await response.json();
+
+        productsDiv.innerHTML = "";
+
+        data.forEach(product => {
+            let html = `
+                <div style="border:1px solid black; padding:15px; margin-bottom:15px; width:300px;">
+                    <h3>${product.title}</h3>
+                    <p><b>Objavil:</b> ${product.username}</p>
+                    <p><b>Opis:</b> ${product.description}</p>
+                    <p><b>Znamka:</b> ${product.brand}</p>
+                    <p><b>Pogon:</b> ${product.power_type}</p>
+                    <p><b>Dolžina ketne:</b> ${product.chain_length} cm</p>
+                    <p><b>Cena:</b> ${product.price} €</p>
+            `;
+
+            if (product.image) {
+                html += `<img src="/static/uploads/${product.image}" width="200">`;
+            }
+
+            if (product.can_delete) {
+                html += `
+                    <form action="/delete_product/${product.doc_id}" method="post">
+                        <br>
+                        <button type="submit">Izbriši</button>
+                    </form>
+                `;
+            }
+
+            html += `</div>`;
+            productsDiv.innerHTML += html;
+        });
+    });
+    </script>
+</body>
+</html>
