@@ -25,7 +25,23 @@
 
         {% if password %}
             <p>Generated password: <b>{{password}}</b></p>
+            <p>Strength: <b>{{strength}}</b></p>
+
+            <form method="post" action="/save_password">
+                <input type="text" name="name" placeholder="npr. Gmail">
+                <input type="hidden" name="password" value="{{password}}">
+                <button type="submit">SAVE</button>
+            </form>
         {% endif %}
+
+        
+        <h3>Tvoja gesla:</h3>
+        
+        {% for doc in documents %}
+            <p>
+                {{doc.name}} |  {{doc.password}}
+            </p>
+        {% endfor %}
 
         <a href="/logout">Logout</a>
     </body>

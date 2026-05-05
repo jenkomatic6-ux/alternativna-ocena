@@ -25,15 +25,20 @@ def generate_password(length,words,numbers,signs):
         luft+="!@#$%^&*()_+-=[]|;:,.<>?"
     if luft == "":
         luft = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]|;:,.<>?"
+    
+    
     password =""
-
-
     for _ in range(length):
         password += random.choice(luft)
     return password
 
-    if len(password) < 8 and luft == "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
-        return 'WEAK'
+def check_strength(password):
+    if len(password) < 8:
+        return "WEAK"
+    if len(password) < 12:
+        return "MEDIUM"
+    else:
+        return "STRONG"
 
 
 
@@ -91,7 +96,10 @@ def logout():
 def dashboard():
     if "user" not in session:
         return redirect("/login")
+
     password = None
+    strength = None
+    user_docs = documents.search(Document.owner == session["user"])
 
     if request.method == "POST":
         try:
@@ -105,11 +113,31 @@ def dashboard():
         signs= request.form.get("obcija3")
 
         password= generate_password(length,words,numbers,signs)
+        strength= check_strength(password)
 
     return render_template(
         "dashboard.html",
         user=session["user"],
-        password=password
+        password=password,
+        strength=strength,
+        documents= user_docs
     )
+
+
+@app.route("/save_password",methods=["POST"])
+def save_password():
+    if "user" not in session:
+        return redirect("/login")
+    
+    name=request.form["name"]
+    password=request.form["password"]
+
+    documents.insert({
+        "owner":session["user"],
+        "name":name,
+        "password": password
+    })
+
+    return redirect("/dashboard")
 
 app.run(debug=1)
