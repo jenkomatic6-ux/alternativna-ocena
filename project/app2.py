@@ -10,14 +10,12 @@ app.secret_key = "secret123"
 DATABASE = "app.db"
 
 
-# 🔹 DB connection
 def get_db():
     db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row
     return db
 
 
-# 🔹 create tables
 def init_db():
     db = get_db()
 
@@ -34,10 +32,10 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
             content TEXT,
-            created_at TEXT
+            created_at TEXT,
+            edit_until TEXT
         )
     """)
-
     db.commit()
     db.close()
 
@@ -56,13 +54,11 @@ def get_time():
 
 
 
-# 🔹 HOME
 @app.route("/")
 def home():
     return redirect("/login")
 
 
-# 🔹 REGISTER
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
@@ -105,14 +101,15 @@ def login():
     return render_template("login.html")
 
 
-# 🔹 LOGOUT
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/login")
 
 
-# 🔹 DASHBOARD
+
+
 @app.route("/dashboard")
 def dashboard():
     if "user" not in session:
@@ -121,20 +118,34 @@ def dashboard():
     db = get_db()
 
     posts = db.execute("""
-        SELECT posts.content, posts.created_at, users.username
+        SELECT posts.*, users.username
         FROM posts
         JOIN users ON posts.user_id = users.id
         ORDER BY posts.id DESC
     """).fetchall()
 
-    return render_template("dashboard.html", user=session["user"], posts=posts)
+    now = get_time()
+
+    posts_fixed = []
+    for p in posts:
+        p = dict(p)
+        if p["edit_until"]:
+            p["edit_until"] = datetime.fromisoformat(p["edit_until"])
+        posts_fixed.append(p)
+
+    return render_template(
+        "dashboard.html",
+        user=session["user"],
+        posts=posts_fixed,
+        now=now
+    )
 
 
-# 🔹 CREATE POST
+
 @app.route("/create_post", methods=["POST"])
 def create_post():
     if "user_id" not in session:
-        return redirect("/login")
+        return jsonify({"success":False})
 
     content = request.form["content"]
 
@@ -143,8 +154,8 @@ def create_post():
 
     db = get_db()
     db.execute(
-        "INSERT INTO posts (user_id, content, created_at) VALUES (?, ?, ?)",
-        (session["user_id"], content, now.isoformat())
+        "INSERT INTO posts (user_id, content, created_at, edit_until) VALUES (?, ?, ?, ?)",
+        (session["user_id"], content, now.isoformat(), edit_until.isoformat())
     )
     db.commit()
     db.close()
@@ -152,6 +163,37 @@ def create_post():
     return jsonify({"success":True})
 
 
+
+
+@app.route("/edit_post/<int:post_id>", methods=["GET","POST"])
+def edit_post(post_id):
+    if "user_id" not in session:
+        return redirect("/login")
+
+    db = get_db()
+    post = db.execute("SELECT * FROM posts WHERE id=?", (post_id,)).fetchone()
+
+    if not post:
+        return "Post ne obstaja"
+
+    if post["user_id"] != session["user_id"]:
+        return "Ni tvoj post"
+
+    now = get_time()
+
+    if now > datetime.fromisoformat(post["edit_until"]):
+        return "Prepozno za urejanje (24h mimo)"
+
+    if request.method == "POST":
+        new_content = request.form["content"]
+
+        db.execute("UPDATE posts SET content=? WHERE id=?", (new_content, post_id))
+        db.commit()
+        db.close()
+
+        return redirect("/dashboard")
+
+    return render_template("edit.html", post=post)
 
 
 if __name__ == "__main__":

@@ -4,16 +4,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Vaja2</title>
+        <link rel="stylesheet" href="/static2/style.css">
     </head>
     <body>
         <h2>Dashboard</h2>
-
         <p>Prijavljen: {{user}}</p>
-
         <a href="/logout">Logout</a>
-
         <hr>
-
         <h3>Nova objava</h3>
 
         <form id="postForm">
@@ -22,15 +19,24 @@
         </form>
 
         <hr>
-
         <h3>Vse objave</h3>
 
         {% for post in posts %}
             <p><b>{{post.username}}</b></p>
             <p>{{post.content}}</p>
             <p>{{post.created_at}}</p>
+
+            {% if post.user_id == session["user_id"] %}
+                {% if now < post.edit_until %}
+                    <a href="/edit_post/{{post.id}}">Edit</a>
+                {% else %}
+                    <p>Ni več možno urejati (24h mimo)</p>
+                {% endif %}
+            {% endif %}
+
             <hr>
         {% endfor %}
+
     </body>
 
     <script>
@@ -48,7 +54,7 @@
                 if(data.success){ //preveri
                     location.reload(); //tuki reseta
                 } else {
-                    alert("Napaka"); //ce ne dela
+                    alert("Napaka"); //ce jebe neki
                 }
             });
         }
