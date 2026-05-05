@@ -1,106 +1,58 @@
 <!DOCTYPE html>
-<html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <nav>
-        <a href="/dashboard">Dashboard</a> |
-        <a href="/profile/{{ session['username'] }}">Moj profil</a> |
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Vaja2</title>
+    </head>
+    <body>
+        <h2>Dashboard</h2>
+
+        <p>Prijavljen: {{user}}</p>
+
         <a href="/logout">Logout</a>
-    </nav>
 
-    <hr>
+        <hr>
 
-    <h2>Pozdravljen {{ user }}!</h2>
+        <h3>Nova objava</h3>
 
-    <h3>Nova objava</h3>
-    <form id="postForm" enctype="multipart/form-data">
-        <textarea name="content" id="content" rows="4" cols="50" placeholder="Napiši objavo..."></textarea>
-        <br><br>
-        <input type="file" name="image" accept="image/*">
-        <br><br>
-        <button type="submit">Objavi</button>
-    </form>
+        <form id="postForm">
+            <textarea name="content" placeholder="Napiši nekaj..."></textarea><br>
+            <button type="submit">Objavi</button>
+        </form>
 
-    <p id="message"></p>
+        <hr>
 
-    <hr>
+        <h3>Vse objave</h3>
 
-    <h3>Vse objave</h3>
-    <div id="posts">
         {% for post in posts %}
-            <div id="post-{{ post.id }}">
-                {% if post.profile_image %}
-                    <img src="{{ url_for('static', filename=post.profile_image) }}" alt="profilna" width="70">
-                    <br>
-                {% endif %}
-
-                <b><a href="/profile/{{ post.username }}">{{ post.username }}</a></b>
-                <p>{{ post.created_at }}</p>
-
-                {% if post.content %}
-                    <p>{{ post.content }}</p>
-                {% endif %}
-
-                {% if post.image_path %}
-                    <img src="{{ url_for('static', filename=post.image_path) }}" alt="slika objave" width="250">
-                {% endif %}
-
-                {% if post.username == session['username'] %}
-                    <br><br>
-                    {% if post.can_manage %}
-                        <a href="/edit_post/{{ post.id }}">Uredi objavo</a>
-                        <button onclick="deletePost({{ post.id }})">Izbriši objavo</button>
-                    {% else %}
-                        <p>Objavo lahko urejaš ali brišeš samo 24 ur po objavi.</p>
-                    {% endif %}
-                {% endif %}
-                <hr>
-            </div>
+            <p><b>{{post.username}}</b></p>
+            <p>{{post.content}}</p>
+            <p>{{post.created_at}}</p>
+            <hr>
         {% endfor %}
-    </div>
+    </body>
 
     <script>
-    document.getElementById("postForm").addEventListener("submit", async function(e) {
-        e.preventDefault();
+        document.getElementById("postForm").onsubmit = function(e){
+            e.preventDefault(); //preprec da se avtomatsko osvezi
 
-        const formData = new FormData(this);
+            let data = new FormData(this); //taka podatke pa shrani
 
-        const response = await fetch("/create_post", {
-            method: "POST",
-            body: formData
-        });
-
-        const data = await response.json();
-        const message = document.getElementById("message");
-
-        if (data.success) {
-            message.innerText = "Objava uspešno dodana.";
-            location.reload();
-        } else {
-            message.innerText = data.message;
+            fetch("/create_post", { //posle mi v py
+                method: "POST",
+                body: data //dejanski podatki
+            })
+            .then(res => res.json()) //obdela odgovr od backenda
+            .then(data => {
+                if(data.success){ //preveri
+                    location.reload(); //tuki reseta
+                } else {
+                    alert("Napaka"); //ce ne dela
+                }
+            });
         }
-    });
-
-    async function deletePost(postId) {
-        const response = await fetch(`/delete_post/${postId}`, {
-            method: "POST"
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            const postElement = document.getElementById("post-" + postId);
-            if (postElement) {
-                postElement.remove();
-            }
-        } else {
-            alert(data.message);
-        }
-    }
     </script>
-</body>
+
+
 </html>
