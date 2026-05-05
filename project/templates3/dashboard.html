@@ -11,7 +11,16 @@
 
         <form method="post" action="/dashboard">
             <input type="number" name="length" placeholder="Password length">
-            <button type="submit">GENERATE!!!</button>
+            <button type="submit">GENERATE!!!</button><br>
+
+            <input type="checkbox" id="obcija1" name="obcija1" value="1">
+            <label for="obcija1">Words</label><br>
+
+            <input type="checkbox" id="obcija2" name="obcija2" value="2">
+            <label for="obcija2">Numbers</label><br>
+
+            <input type="checkbox" id="obcija3" name="obcija3" value="3">
+            <label for="obcija3">Signs</label><br>
         </form>
 
         {% if password %}

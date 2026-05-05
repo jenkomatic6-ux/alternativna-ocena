@@ -13,11 +13,28 @@ documents = db.table("documents")
 User = Query()
 Document = Query()
 
+words= request.form.get("obcija1")
+numbers= request.form.get("obcija2")
+signs= request.form.get("obcija3")
+
+password= generate_password(length,words,numbers,signs)
 
 def generate_password(length):
-    password= ""
+    luft=""
+
+    if words:
+        luft+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    if numbers:
+        luft+="0123456789"
+    if signs:
+        luft+="!@#$%^&*()_+-=[]|;:,.<>?"
+    if luft == "":
+        luft = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]|;:,.<>?"
+    password =""
+
+
     for _ in range(length):
-        password += chr(random.randint(32,126))
+        password += random.choice(luft)
     return password
 
 
