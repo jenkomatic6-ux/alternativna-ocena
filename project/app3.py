@@ -6,20 +6,15 @@ import random
 app = Flask(__name__, template_folder="templates3", static_folder="static3")
 app.secret_key = "skrivnost123"
 
-db = TinyDB("db/db.json")
+db = TinyDB("db3/db.json")
 users = db.table("users")
 documents = db.table("documents")
 
 User = Query()
 Document = Query()
 
-words= request.form.get("obcija1")
-numbers= request.form.get("obcija2")
-signs= request.form.get("obcija3")
 
-password= generate_password(length,words,numbers,signs)
-
-def generate_password(length):
+def generate_password(length,words,numbers,signs):
     luft=""
 
     if words:
@@ -36,6 +31,10 @@ def generate_password(length):
     for _ in range(length):
         password += random.choice(luft)
     return password
+
+    if len(password) < 8 and luft == "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        return 'WEAK'
+
 
 
 @app.route("/")
@@ -100,7 +99,12 @@ def dashboard():
         except:
             length = 8
         
-        password = generate_password(length)
+
+        words= request.form.get("obcija1")
+        numbers= request.form.get("obcija2")
+        signs= request.form.get("obcija3")
+
+        password= generate_password(length,words,numbers,signs)
 
     return render_template(
         "dashboard.html",
