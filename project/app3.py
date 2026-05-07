@@ -116,12 +116,7 @@ def dashboard():
         strength= check_strength(password)
 
     return render_template(
-        "dashboard.html",
-        user=session["user"],
-        password=password,
-        strength=strength,
-        documents= user_docs
-    )
+        "dashboard.html",user=session["user"],password=password,strength=strength,documents= user_docs)
 
 
 @app.route("/save_password",methods=["POST"])
