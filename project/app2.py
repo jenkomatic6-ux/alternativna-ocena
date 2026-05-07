@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 app = Flask(__name__, template_folder="templates2", static_folder="static2")
 app.secret_key = "secret123"
 
-DATABASE = "app.db"
+DATABASE = "db2/app.db"
 
 
 def get_db():
